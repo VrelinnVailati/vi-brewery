@@ -3,10 +3,10 @@ package dev.vailati.vibrewery.controller;
 import dev.vailati.vibrewery.model.Customer;
 import dev.vailati.vibrewery.services.CustomerService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,13 +17,22 @@ import java.util.UUID;
 public class CustomerController {
     private CustomerService customerService;
 
+    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
+        Customer savedCustomer = customerService.saveCustomer(customer);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/api/v1/customer/" + savedCustomer.getId());
+
+        return new ResponseEntity<>(savedCustomer, headers, HttpStatus.CREATED);
+    }
+
     @GetMapping
-    List<Customer> listCustomers() {
+    public List<Customer> listCustomers() {
         return customerService.listCustomers();
     }
 
     @GetMapping("{customerId}")
-    Customer getCustomerById(@PathVariable UUID customerId) {
+    public Customer getCustomerById(@PathVariable UUID customerId) {
         return customerService.getCustomerById(customerId);
     }
 }

@@ -13,7 +13,6 @@ import java.util.UUID;
 public class Customer {
     private UUID id;
     private String customerName;
-    @Getter(AccessLevel.NONE)
     private Integer version;
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
