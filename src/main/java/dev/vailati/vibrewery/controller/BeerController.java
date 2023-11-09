@@ -4,6 +4,7 @@ import dev.vailati.vibrewery.model.Beer;
 import dev.vailati.vibrewery.services.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,13 @@ import java.util.UUID;
 @RequestMapping("/api/v1/beer")
 public class BeerController {
     private final BeerService beerService;
+
+    @PutMapping("{beerId}")
+    public ResponseEntity<Void> updateBeerById(@PathVariable UUID beerId, @RequestBody Beer beer) {
+        beerService.updateBeerById(beerId, beer);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<Beer> createBeer(@RequestBody Beer beer) {

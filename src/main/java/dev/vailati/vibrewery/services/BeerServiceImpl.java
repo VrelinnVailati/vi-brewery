@@ -3,6 +3,7 @@ package dev.vailati.vibrewery.services;
 import dev.vailati.vibrewery.model.Beer;
 import dev.vailati.vibrewery.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -87,5 +88,20 @@ public class BeerServiceImpl implements BeerService {
         beerMap.put(savedBeer.getId(), savedBeer);
 
         return savedBeer;
+    }
+
+    @Override
+    public void updateBeerById(UUID beerId, Beer beer) {
+        Beer existingBeer = beerMap.get(beerId);
+
+        existingBeer.setVersion(existingBeer.getVersion() + 1);
+        existingBeer.setBeerName(beer.getBeerName());
+        existingBeer.setBeerStyle(beer.getBeerStyle());
+        existingBeer.setUpc(beer.getUpc());
+        existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
+        existingBeer.setPrice(beer.getPrice());
+        existingBeer.setUpdateDate(LocalDateTime.now());
+
+        beerMap.put(beerId, existingBeer);
     }
 }
