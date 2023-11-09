@@ -3,7 +3,6 @@ package dev.vailati.vibrewery.services;
 import dev.vailati.vibrewery.model.Beer;
 import dev.vailati.vibrewery.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
