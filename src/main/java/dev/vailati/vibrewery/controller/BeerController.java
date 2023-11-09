@@ -4,6 +4,7 @@ import dev.vailati.vibrewery.model.Beer;
 import dev.vailati.vibrewery.services.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +20,13 @@ public class BeerController {
     private final BeerService beerService;
 
     @PostMapping
-    public ResponseEntity<Void> createBeer(@RequestBody Beer beer) {
-        beerService.saveBeer(beer);
+    public ResponseEntity<Beer> createBeer(@RequestBody Beer beer) {
+        Beer savedBeer = beerService.saveBeer(beer);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/api/v1/beer/" + savedBeer.getId());
+
+        return new ResponseEntity<>(savedBeer, headers, HttpStatus.CREATED);
     }
 
     @GetMapping
