@@ -4,6 +4,7 @@ import dev.vailati.vibrewery.model.Beer;
 import dev.vailati.vibrewery.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -65,8 +66,6 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public Beer getBeerById(UUID id) {
-        log.debug("Get Beer by Id - In service. Id: " + id.toString());
-
         return beerMap.get(id);
     }
 
@@ -107,5 +106,42 @@ public class BeerServiceImpl implements BeerService {
     @Override
     public void deleteBeerById(UUID beerId) {
         beerMap.remove(beerId);
+    }
+
+    @Override
+    public void patchBeerById(UUID beerId, Beer beer) {
+        Beer existingBeer = beerMap.get(beerId);
+        boolean beerWasUpdated = false;
+
+        if (StringUtils.hasText(beer.getBeerName())) {
+            existingBeer.setBeerName(beer.getBeerName());
+            beerWasUpdated = true;
+        }
+
+        if (beer.getBeerStyle() != null) {
+            existingBeer.setBeerStyle(beer.getBeerStyle());
+            beerWasUpdated = true;
+        }
+
+        if (beer.getPrice() != null) {
+            existingBeer.setPrice(beer.getPrice());
+            beerWasUpdated = true;
+        }
+
+        if (beer.getQuantityOnHand() != null) {
+            existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
+            beerWasUpdated = true;
+        }
+
+        if (StringUtils.hasText(beer.getUpc())) {
+            existingBeer.setUpc(beer.getUpc());
+            beerWasUpdated = true;
+        }
+
+        if (beerWasUpdated) {
+            existingBeer.setUpdateDate(LocalDateTime.now());
+        }
+
+        beerMap.put(beerId, existingBeer);
     }
 }
