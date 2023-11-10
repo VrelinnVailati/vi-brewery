@@ -2,6 +2,7 @@ package dev.vailati.vibrewery.services;
 
 import dev.vailati.vibrewery.model.Customer;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -72,5 +73,23 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomerById(UUID customerId) {
         customerMap.remove(customerId);
+    }
+
+    @Override
+    public void patchCustomerByID(UUID customerId, Customer customer) {
+        Customer existingCustomer = customerMap.get(customerId);
+        boolean customerWasUpdated = false;
+
+        if (StringUtils.hasText(customer.getCustomerName())) {
+            existingCustomer.setCustomerName(customer.getCustomerName());
+            customerWasUpdated = true;
+        }
+
+        if (customerWasUpdated) {
+            existingCustomer.setVersion(existingCustomer.getVersion() + 1);
+            existingCustomer.setLastModifiedDate(LocalDateTime.now());
+        }
+
+        customerMap.put(customerId, existingCustomer);
     }
 }

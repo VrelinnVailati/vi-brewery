@@ -139,6 +139,7 @@ public class BeerServiceImpl implements BeerService {
         }
 
         if (beerWasUpdated) {
+            existingBeer.setVersion(existingBeer.getVersion() + 1);
             existingBeer.setUpdateDate(LocalDateTime.now());
         }
 
