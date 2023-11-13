@@ -16,7 +16,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/customer")
 public class CustomerController {
-    private CustomerService customerService;
+    private final CustomerService customerService;
 
     @PatchMapping("{customerId}")
     public ResponseEntity<Void> patchCustomerById(@PathVariable UUID customerId, @RequestBody Customer customer) {
