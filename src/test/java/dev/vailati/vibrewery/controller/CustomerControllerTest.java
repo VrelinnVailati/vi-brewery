@@ -15,9 +15,10 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CustomerController.class)
@@ -38,8 +39,24 @@ public class CustomerControllerTest {
         customerServiceImpl = new CustomerServiceImpl();
     }
 
+    
+
     @Test
-    void createCustomer() throws Exception {
+    void testUpdateCustomerById() throws Exception {
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+
+        ResultActions response = mockMvc.perform(put("/api/v1/customer/" + customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customer)));
+
+        response.andExpect(status().isOk());
+
+        verify(customerService).updateCustomerById(eq(customer.getId()), any(Customer.class));
+    }
+
+    @Test
+    void testCreateCustomer() throws Exception {
         Customer customer = customerServiceImpl.listCustomers().get(0);
         customer.setVersion(null);
         customer.setId(null);
