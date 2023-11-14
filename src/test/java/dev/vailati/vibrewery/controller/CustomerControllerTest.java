@@ -7,6 +7,7 @@ import dev.vailati.vibrewery.services.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +39,12 @@ public class CustomerControllerTest {
     @MockBean
     CustomerService customerService;
 
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<Customer> customerArgumentCaptor;
+
     CustomerServiceImpl customerServiceImpl;
 
     @BeforeEach
@@ -44,10 +53,30 @@ public class CustomerControllerTest {
     }
 
     @Test
+    void testPatchCustomerById() throws Exception {
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+
+        String testName = "Test Customer";
+
+        Map<String, Object> customerMap = new HashMap<>();
+        customerMap.put("customerName", testName);
+
+        ResultActions response = mockMvc.perform(patch("/api/v1/customer/" + customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customerMap)));
+
+        response.andExpect(status().isOk());
+        verify(customerService).patchCustomerByID(uuidArgumentCaptor.capture(), customerArgumentCaptor.capture());
+
+        assertThat(uuidArgumentCaptor.getValue()).isEqualTo(customer.getId());
+        assertThat(customerArgumentCaptor.getValue().getCustomerName()).isEqualTo(testName);
+    }
+
+    @Test
     void testDeleteCustomerById() throws Exception {
         // Arrange
         Customer customer = customerServiceImpl.listCustomers().get(0);
-        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
 
         // Act
         ResultActions response = mockMvc.perform(delete("/api/v1/customer/" + customer.getId())
