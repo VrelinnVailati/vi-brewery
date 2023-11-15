@@ -62,7 +62,7 @@ public class BeerControllerTest {
         Map<String, Object> beerMap = new HashMap<>();
         beerMap.put("beerName", testName);
 
-        ResultActions response = mockMvc.perform(patch("/api/v1/beer/" + beer.getId())
+        ResultActions response = mockMvc.perform(patch(BeerController.BEER_PATH_ID, beer.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beerMap)));
@@ -79,7 +79,7 @@ public class BeerControllerTest {
         Beer beer = beerServiceImpl.listBeers().get(0);
 
         // Act
-        ResultActions response = mockMvc.perform(delete("/api/v1/beer/" + beer.getId())
+        ResultActions response = mockMvc.perform(delete(BeerController.BEER_PATH_ID, beer.getId())
                 .accept(MediaType.APPLICATION_JSON));
 
         // Assert
@@ -94,7 +94,7 @@ public class BeerControllerTest {
         Beer beer = beerServiceImpl.listBeers().get(0);
 
         //Act
-        ResultActions response = mockMvc.perform(put("/api/v1/beer/" + beer.getId())
+        ResultActions response = mockMvc.perform(put(BeerController.BEER_PATH_ID, beer.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beer)));
@@ -114,7 +114,7 @@ public class BeerControllerTest {
         given(beerService.saveBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
 
         // Act
-        ResultActions response = mockMvc.perform(post("/api/v1/beer")
+        ResultActions response = mockMvc.perform(post(BeerController.BEER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beer)));
@@ -128,7 +128,7 @@ public class BeerControllerTest {
     void listBeers() throws Exception {
         given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
 
-        ResultActions response = mockMvc.perform(get("/api/v1/beer").accept(MediaType.APPLICATION_JSON));
+        ResultActions response = mockMvc.perform(get(BeerController.BEER_PATH).accept(MediaType.APPLICATION_JSON));
 
         response.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -144,7 +144,7 @@ public class BeerControllerTest {
                 .willReturn(testBeer);
 
         // Act
-        ResultActions response = mockMvc.perform(get("/api/v1/beer/" + testBeer.getId())
+        ResultActions response = mockMvc.perform(get(BeerController.BEER_PATH_ID, testBeer.getId())
                 .accept(MediaType.APPLICATION_JSON));
 
         // Assert
