@@ -1,21 +1,21 @@
 package dev.vailati.vibrewery.services;
 
-import dev.vailati.vibrewery.model.Customer;
+import dev.vailati.vibrewery.model.CustomerDTO;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface CustomerService {
-    List<Customer> listCustomers();
+    List<CustomerDTO> listCustomers();
 
-    Optional<Customer> getCustomerById(UUID customerId);
+    Optional<CustomerDTO> getCustomerById(UUID customerId);
 
-    Customer saveCustomer(Customer customer);
+    CustomerDTO saveCustomer(CustomerDTO customer);
 
-    void updateCustomerById(UUID customerId, Customer customer);
+    void updateCustomerById(UUID customerId, CustomerDTO customer);
 
     void deleteCustomerById(UUID customerId);
 
-    void patchCustomerByID(UUID customerId, Customer customer);
+    void patchCustomerByID(UUID customerId, CustomerDTO customer);
 }
