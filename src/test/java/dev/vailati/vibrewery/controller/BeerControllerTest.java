@@ -1,8 +1,7 @@
 package dev.vailati.vibrewery.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.vailati.vibrewery.model.Beer;
+import dev.vailati.vibrewery.model.BeerDTO;
 import dev.vailati.vibrewery.services.BeerService;
 import dev.vailati.vibrewery.services.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +44,7 @@ public class BeerControllerTest {
     ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     @Captor
-    ArgumentCaptor<Beer> beerArgumentCaptor;
+    ArgumentCaptor<BeerDTO> beerArgumentCaptor;
 
     BeerServiceImpl beerServiceImpl;
 
@@ -56,7 +55,7 @@ public class BeerControllerTest {
 
     @Test
     void testPatchBeerById() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         String testName = "Test Name";
 
@@ -77,7 +76,7 @@ public class BeerControllerTest {
     @Test
     void testDeleteBeerById() throws Exception {
         // Arrange
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         // Act
         ResultActions response = mockMvc.perform(delete(BeerController.BEER_PATH_ID, beer.getId())
@@ -92,7 +91,7 @@ public class BeerControllerTest {
     @Test
     void testUpdateBeerById() throws Exception {
         // Arrange
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         //Act
         ResultActions response = mockMvc.perform(put(BeerController.BEER_PATH_ID, beer.getId())
@@ -102,17 +101,17 @@ public class BeerControllerTest {
 
         // Assert
         response.andExpect(status().isOk());
-        verify(beerService).updateBeerById(eq(beer.getId()), any(Beer.class));
+        verify(beerService).updateBeerById(eq(beer.getId()), any(BeerDTO.class));
     }
 
     @Test
     void testCreateNewBeer() throws Exception {
         // Arrange
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
         beer.setVersion(null);
         beer.setId(null);
 
-        given(beerService.saveBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
+        given(beerService.saveBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(1));
 
         // Act
         ResultActions response = mockMvc.perform(post(BeerController.BEER_PATH)
@@ -147,7 +146,7 @@ public class BeerControllerTest {
     @Test
     void getBeerById() throws Exception {
         // Arrange
-        Beer testBeer = beerServiceImpl.listBeers().get(0);
+        BeerDTO testBeer = beerServiceImpl.listBeers().get(0);
 
         given(beerService.getBeerById(testBeer.getId()))
                 .willReturn(Optional.of(testBeer));
