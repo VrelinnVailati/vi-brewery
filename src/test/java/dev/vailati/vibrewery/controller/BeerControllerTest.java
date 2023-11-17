@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -137,7 +138,7 @@ public class BeerControllerTest {
 
     @Test
     void testGetBeerByIdNotFound() throws Exception {
-        given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
+        given(beerService.getBeerById(any(UUID.class))).willReturn(Optional.empty());
 
         mockMvc.perform(get(BeerController.BEER_PATH_ID, UUID.randomUUID()))
                 .andExpect(status().isNotFound());
@@ -149,7 +150,7 @@ public class BeerControllerTest {
         Beer testBeer = beerServiceImpl.listBeers().get(0);
 
         given(beerService.getBeerById(testBeer.getId()))
-                .willReturn(testBeer);
+                .willReturn(Optional.of(testBeer));
 
         // Act
         ResultActions response = mockMvc.perform(get(BeerController.BEER_PATH_ID, testBeer.getId())
