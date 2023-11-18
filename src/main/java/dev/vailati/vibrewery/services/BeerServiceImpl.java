@@ -92,7 +92,6 @@ public class BeerServiceImpl implements BeerService {
     public void updateBeerById(UUID beerId, BeerDTO beer) {
         BeerDTO existingBeer = beerMap.get(beerId);
 
-        existingBeer.setVersion(existingBeer.getVersion() + 1);
         existingBeer.setBeerName(beer.getBeerName());
         existingBeer.setBeerStyle(beer.getBeerStyle());
         existingBeer.setUpc(beer.getUpc());
@@ -139,7 +138,6 @@ public class BeerServiceImpl implements BeerService {
         }
 
         if (beerWasUpdated) {
-            existingBeer.setVersion(existingBeer.getVersion() + 1);
             existingBeer.setUpdateDate(LocalDateTime.now());
         }
 

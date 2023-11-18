@@ -64,7 +64,6 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerDTO existingCustomer = customerMap.get(customerId);
 
         existingCustomer.setCustomerName(customer.getCustomerName());
-        existingCustomer.setVersion(customer.getVersion() + 1);
         existingCustomer.setLastModifiedDate(LocalDateTime.now());
 
         customerMap.put(customerId, existingCustomer);
@@ -86,7 +85,6 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         if (customerWasUpdated) {
-            existingCustomer.setVersion(existingCustomer.getVersion() + 1);
             existingCustomer.setLastModifiedDate(LocalDateTime.now());
         }
 
