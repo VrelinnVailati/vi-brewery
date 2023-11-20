@@ -93,6 +93,9 @@ public class BeerControllerTest {
         // Arrange
         BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
+        given(beerService.updateBeerById(eq(beer.getId()), any(BeerDTO.class)))
+                .willReturn(Optional.of(BeerDTO.builder().build()));
+
         //Act
         ResultActions response = mockMvc.perform(put(BeerController.BEER_PATH_ID, beer.getId())
                 .accept(MediaType.APPLICATION_JSON)
