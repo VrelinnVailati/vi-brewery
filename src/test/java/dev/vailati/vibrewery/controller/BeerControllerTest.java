@@ -78,6 +78,8 @@ public class BeerControllerTest {
         // Arrange
         BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
+        given(beerService.deleteBeerById(beer.getId())).willReturn(true);
+
         // Act
         ResultActions response = mockMvc.perform(delete(BeerController.BEER_PATH_ID, beer.getId())
                 .accept(MediaType.APPLICATION_JSON));
