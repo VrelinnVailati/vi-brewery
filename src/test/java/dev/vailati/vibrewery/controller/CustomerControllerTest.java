@@ -1,6 +1,7 @@
 package dev.vailati.vibrewery.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.vailati.vibrewery.entities.Customer;
 import dev.vailati.vibrewery.model.CustomerDTO;
 import dev.vailati.vibrewery.services.CustomerService;
 import dev.vailati.vibrewery.services.CustomerServiceImpl;
@@ -79,6 +80,8 @@ public class CustomerControllerTest {
         // Arrange
         CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
 
+        given(customerService.deleteCustomerById(customer.getId())).willReturn(true);
+
         // Act
         ResultActions response = mockMvc.perform(delete(CustomerController.CUSTOMER_PATH_ID, customer.getId())
                 .accept(MediaType.APPLICATION_JSON));
@@ -92,6 +95,10 @@ public class CustomerControllerTest {
     @Test
     void testUpdateCustomerById() throws Exception {
         CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
+
+        given(customerService.updateCustomerById(eq(customer.getId()), any(CustomerDTO.class))).willReturn(
+                Optional.of(CustomerDTO.builder().build())
+        );
 
         ResultActions response = mockMvc.perform(put(CustomerController.CUSTOMER_PATH_ID, customer.getId())
                 .accept(MediaType.APPLICATION_JSON)
