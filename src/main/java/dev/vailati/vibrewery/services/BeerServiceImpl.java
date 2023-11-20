@@ -1,10 +1,12 @@
 package dev.vailati.vibrewery.services;
 
+import dev.vailati.vibrewery.entities.Beer;
+import dev.vailati.vibrewery.mappers.BeerMapper;
 import dev.vailati.vibrewery.model.BeerDTO;
 import dev.vailati.vibrewery.model.BeerStyle;
+import dev.vailati.vibrewery.utils.BeerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,9 +16,11 @@ import java.util.*;
 @Service
 public class BeerServiceImpl implements BeerService {
     private Map<UUID, BeerDTO> beerMap;
+    private final BeerMapper beerMapper;
 
-    public BeerServiceImpl() {
+    public BeerServiceImpl(BeerMapper beerMapper) {
         this.beerMap = new HashMap<>();
+        this.beerMapper = beerMapper;
 
         BeerDTO beer1 = BeerDTO.builder()
                 .id(UUID.randomUUID())
@@ -112,39 +116,17 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public void patchBeerById(UUID beerId, BeerDTO beer) {
+    public Optional<BeerDTO> patchBeerById(UUID beerId, BeerDTO beer) {
         BeerDTO existingBeer = beerMap.get(beerId);
-        boolean beerWasUpdated = false;
 
-        if (StringUtils.hasText(beer.getBeerName())) {
-            existingBeer.setBeerName(beer.getBeerName());
-            beerWasUpdated = true;
-        }
-
-        if (beer.getBeerStyle() != null) {
-            existingBeer.setBeerStyle(beer.getBeerStyle());
-            beerWasUpdated = true;
-        }
-
-        if (beer.getPrice() != null) {
-            existingBeer.setPrice(beer.getPrice());
-            beerWasUpdated = true;
-        }
-
-        if (beer.getQuantityOnHand() != null) {
-            existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
-            beerWasUpdated = true;
-        }
-
-        if (StringUtils.hasText(beer.getUpc())) {
-            existingBeer.setUpc(beer.getUpc());
-            beerWasUpdated = true;
-        }
-
-        if (beerWasUpdated) {
-            existingBeer.setUpdateDate(LocalDateTime.now());
-        }
+        existingBeer = beerMapper.beerToBeerDto(
+                BeerUtils.buildPatchObject(
+                        beerMapper.beerDtoToBeer(existingBeer),
+                        beerMapper.beerDtoToBeer(beer))
+        );
 
         beerMap.put(beerId, existingBeer);
+
+        return Optional.of(existingBeer);
     }
 }

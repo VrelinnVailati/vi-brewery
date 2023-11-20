@@ -1,8 +1,10 @@
 package dev.vailati.vibrewery.services;
 
+import dev.vailati.vibrewery.entities.Beer;
 import dev.vailati.vibrewery.mappers.BeerMapper;
 import dev.vailati.vibrewery.model.BeerDTO;
 import dev.vailati.vibrewery.repositories.BeerRepository;
+import dev.vailati.vibrewery.utils.BeerUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -65,7 +67,16 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public void patchBeerById(UUID beerId, BeerDTO beer) {
+    public Optional<BeerDTO> patchBeerById(UUID beerId, BeerDTO beer) {
+        AtomicReference<Optional<BeerDTO>> atomicReference = new AtomicReference<>();
 
+        beerRepository.findById(beerId).ifPresentOrElse(existingBeer -> {
+            existingBeer = BeerUtils.buildPatchObject(existingBeer, beerMapper.beerDtoToBeer(beer));
+
+            beerRepository.save(existingBeer);
+            atomicReference.set(Optional.of(beerMapper.beerToBeerDto(existingBeer)));
+        }, () -> atomicReference.set(Optional.empty()));
+
+        return atomicReference.get();
     }
 }

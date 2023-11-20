@@ -1,11 +1,13 @@
 package dev.vailati.vibrewery.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.vailati.vibrewery.mappers.BeerMapper;
 import dev.vailati.vibrewery.model.BeerDTO;
 import dev.vailati.vibrewery.services.BeerService;
 import dev.vailati.vibrewery.services.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +52,16 @@ public class BeerControllerTest {
 
     @BeforeEach
     void setUp() {
-        beerServiceImpl = new BeerServiceImpl();
+        beerServiceImpl = new BeerServiceImpl(Mappers.getMapper(BeerMapper.class));
     }
 
     @Test
     void testPatchBeerById() throws Exception {
         BeerDTO beer = beerServiceImpl.listBeers().get(0);
+
+        given(beerService.patchBeerById(eq(beer.getId()), any(BeerDTO.class))).willReturn(Optional.of(
+                BeerDTO.builder().build()
+        ));
 
         String testName = "Test Name";
 
