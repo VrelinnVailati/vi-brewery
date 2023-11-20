@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @Primary
@@ -33,12 +34,23 @@ public class BeerServiceJPA implements BeerService {
 
     @Override
     public BeerDTO saveBeer(BeerDTO beer) {
-        return null;
+        return beerMapper.beerToBeerDto(beerRepository.save(beerMapper.beerDtoToBeer(beer)));
     }
 
     @Override
-    public void updateBeerById(UUID beerId, BeerDTO beer) {
+    public Optional<BeerDTO> updateBeerById(UUID beerId, BeerDTO beer) {
+        AtomicReference<Optional<BeerDTO>> atomicReference = new AtomicReference<>();
 
+        beerRepository.findById(beerId).ifPresentOrElse(existingBeer -> {
+            existingBeer.setBeerName(beer.getBeerName());
+            existingBeer.setBeerStyle(beer.getBeerStyle());
+            existingBeer.setUpc(beer.getUpc());
+            existingBeer.setPrice(beer.getPrice());
+
+            atomicReference.set(Optional.of(beerMapper.beerToBeerDto(existingBeer)));
+        }, () -> atomicReference.set(Optional.empty()));
+
+        return atomicReference.get();
     }
 
     @Override
