@@ -2,11 +2,13 @@ package dev.vailati.vibrewery.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vailati.vibrewery.entities.Customer;
+import dev.vailati.vibrewery.mappers.CustomerMapper;
 import dev.vailati.vibrewery.model.CustomerDTO;
 import dev.vailati.vibrewery.services.CustomerService;
 import dev.vailati.vibrewery.services.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,14 +53,17 @@ public class CustomerControllerTest {
 
     @BeforeEach
     void setUp() {
-        customerServiceImpl = new CustomerServiceImpl();
+        customerServiceImpl = new CustomerServiceImpl(Mappers.getMapper(CustomerMapper.class));
     }
 
     @Test
     void testPatchCustomerById() throws Exception {
         CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
-
         String testName = "Test Customer";
+
+        given(customerService.patchCustomerByID(eq(customer.getId()), any(CustomerDTO.class))).willReturn(
+                Optional.of(customer)
+        );
 
         Map<String, Object> customerMap = new HashMap<>();
         customerMap.put("customerName", testName);
@@ -97,7 +102,7 @@ public class CustomerControllerTest {
         CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
 
         given(customerService.updateCustomerById(eq(customer.getId()), any(CustomerDTO.class))).willReturn(
-                Optional.of(CustomerDTO.builder().build())
+                Optional.of(customer)
         );
 
         ResultActions response = mockMvc.perform(put(CustomerController.CUSTOMER_PATH_ID, customer.getId())

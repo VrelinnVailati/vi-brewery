@@ -3,6 +3,7 @@ package dev.vailati.vibrewery.services;
 import dev.vailati.vibrewery.mappers.CustomerMapper;
 import dev.vailati.vibrewery.model.CustomerDTO;
 import dev.vailati.vibrewery.repositories.CustomerRepository;
+import dev.vailati.vibrewery.utils.CustomerUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -68,7 +69,22 @@ public class CustomerServiceJPA implements CustomerService {
     }
 
     @Override
-    public void patchCustomerByID(UUID customerId, CustomerDTO customer) {
+    public Optional<CustomerDTO> patchCustomerByID(UUID customerId, CustomerDTO customer) {
+        AtomicReference<Optional<CustomerDTO>> atomicReference = new AtomicReference<>();
 
+        customerRepository.findById(customerId).ifPresentOrElse(
+                existingCustomer -> {
+                    existingCustomer = CustomerUtils.buildPatchObject(
+                            existingCustomer,
+                            customerMapper.customerDtoToCustomer(customer)
+                    );
+
+                    customerRepository.save(existingCustomer);
+                    atomicReference.set(Optional.of(customerMapper.customerToCustomerDto(existingCustomer)));
+                },
+                () -> atomicReference.set(Optional.empty())
+        );
+
+        return atomicReference.get();
     }
 }

@@ -1,6 +1,8 @@
 package dev.vailati.vibrewery.services;
 
+import dev.vailati.vibrewery.mappers.CustomerMapper;
 import dev.vailati.vibrewery.model.CustomerDTO;
+import dev.vailati.vibrewery.utils.CustomerUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -11,8 +13,11 @@ import java.util.*;
 public class CustomerServiceImpl implements CustomerService {
     private Map<UUID, CustomerDTO> customerMap;
 
-    public CustomerServiceImpl() {
+    private final CustomerMapper customerMapper;
+
+    public CustomerServiceImpl(CustomerMapper customerMapper) {
         this.customerMap = new HashMap<>();
+        this.customerMapper = customerMapper;
 
         CustomerDTO customer1 = CustomerDTO.builder()
                 .id(UUID.randomUUID())
@@ -79,19 +84,16 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void patchCustomerByID(UUID customerId, CustomerDTO customer) {
+    public Optional<CustomerDTO> patchCustomerByID(UUID customerId, CustomerDTO customer) {
         CustomerDTO existingCustomer = customerMap.get(customerId);
-        boolean customerWasUpdated = false;
 
-        if (StringUtils.hasText(customer.getCustomerName())) {
-            existingCustomer.setCustomerName(customer.getCustomerName());
-            customerWasUpdated = true;
-        }
-
-        if (customerWasUpdated) {
-            existingCustomer.setLastModifiedDate(LocalDateTime.now());
-        }
+        existingCustomer = customerMapper.customerToCustomerDto(CustomerUtils.buildPatchObject(
+                customerMapper.customerDtoToCustomer(existingCustomer),
+                customerMapper.customerDtoToCustomer(customer)
+        ));
 
         customerMap.put(customerId, existingCustomer);
+
+        return Optional.of(existingCustomer);
     }
 }
