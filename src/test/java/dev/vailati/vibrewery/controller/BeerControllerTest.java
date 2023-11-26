@@ -118,6 +118,22 @@ public class BeerControllerTest {
     }
 
     @Test
+    void testUpdateBeerNullBeerName() throws Exception {
+        BeerDTO testBeer = beerServiceImpl.listBeers().get(0);
+        testBeer.setBeerName(null);
+
+        given(beerService.updateBeerById(any(UUID.class), any(BeerDTO.class)))
+                .willReturn(Optional.of(beerServiceImpl.listBeers().get(1)));
+
+        mockMvc.perform(put(BeerController.BEER_PATH_ID, testBeer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testBeer)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.length()", is(1)));
+    }
+
+    @Test
     void testCreateNewBeer() throws Exception {
         // Arrange
         BeerDTO beer = beerServiceImpl.listBeers().get(0);
@@ -135,6 +151,19 @@ public class BeerControllerTest {
         // Assert
         response.andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
+    }
+
+    @Test
+    void testCreateBeerNullBeerName() throws Exception {
+        BeerDTO beerDTO = BeerDTO.builder().build();
+
+        given(beerService.saveBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(1));
+
+        mockMvc.perform(post(BeerController.BEER_PATH).accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beerDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.length()", is(4)));
     }
 
     @Test
@@ -173,17 +202,5 @@ public class BeerControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(testBeer.getId().toString())))
                 .andExpect(jsonPath("$.beerName", is(testBeer.getBeerName())));
-    }
-
-    @Test
-    void testCreateBeerNullBeerName() throws Exception {
-        BeerDTO beerDTO = BeerDTO.builder().build();
-
-        given(beerService.saveBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(1));
-
-        mockMvc.perform(post(BeerController.BEER_PATH).accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(beerDTO)))
-                .andExpect(status().isBadRequest());
     }
 }

@@ -1,6 +1,7 @@
 package dev.vailati.vibrewery.model;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,9 +17,13 @@ public class BeerDTO {
 
     @NotBlank
     private String beerName;
+
+    @NotNull
     private BeerStyle beerStyle;
+    @NotBlank
     private String upc;
     private Integer quantityOnHand;
+    @NotNull
     private BigDecimal price;
     private LocalDateTime createdDate;
     private LocalDateTime updateDate;
