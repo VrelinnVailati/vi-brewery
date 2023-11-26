@@ -1,6 +1,5 @@
 package dev.vailati.vibrewery.services;
 
-import dev.vailati.vibrewery.entities.Beer;
 import dev.vailati.vibrewery.mappers.BeerMapper;
 import dev.vailati.vibrewery.model.BeerDTO;
 import dev.vailati.vibrewery.repositories.BeerRepository;

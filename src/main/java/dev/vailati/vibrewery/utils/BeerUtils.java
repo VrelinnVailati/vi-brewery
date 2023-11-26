@@ -1,10 +1,7 @@
 package dev.vailati.vibrewery.utils;
 
 import dev.vailati.vibrewery.entities.Beer;
-import dev.vailati.vibrewery.model.BeerStyle;
 import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
 
 public class BeerUtils {
     public static Beer buildPatchObject(Beer original, Beer updated) {
